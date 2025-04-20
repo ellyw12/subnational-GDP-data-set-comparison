@@ -131,5 +131,5 @@ print(f"Number of rows in data after conversions: {num_rows2}")
 pickle_path = data_path + 'pickle/'
 
 # Save the DataFrame to a pickle file
-data[['GID_0', 'GID_1', 'year', 'Z2024_pc','Z2024_GRP_pc_lcu', 'Z2024_GRP_pc_lcu_2015','Z2024_GRP_pc_lcu2015_usd', 'Z2024_GRP_pc_ppp_2015', 'Z2024_GRP_pc_lcu2015_ppp']].to_pickle(pickle_path + 'zhang_2024_PC_all.pkl')
+data[['GID_0', 'GID_1', 'year', 'Z2024_pc','Z2024_GRP_pc_lcu', 'Z2024_GRP_pc_lcu_2015','Z2024_GRP_pc_lcu2015_usd', 'Z2024_GRP_pc_ppp_2015', 'Z2024_GRP_pc_lcu2015_ppp']].to_pickle(pickle_path + 'zhang_2024.pkl')
 
