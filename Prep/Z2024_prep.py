@@ -31,12 +31,12 @@ remove_2013b = True #higher correlation when set to True
 if remove_2013b:
     zhang_clean = zhang[~((zhang['year_str'] == '2013b') & (zhang['year'] == 2013))]
     removed_duplicates = zhang[(zhang['year_str'] == '2013b') & (zhang['year'] == 2013)]
-    removed_duplicates.to_csv(data_path + 'zhang_duplicates1.csv', index=False)
+    # removed_duplicates.to_csv(data_path + 'zhang_duplicates1.csv', index=False)
 
 else:
     zhang_clean = zhang[~((zhang['year_str'] == '2013') & (zhang['year'] == 2013))]
     removed_duplicates = zhang[(zhang['year_str'] == '2013') & (zhang['year'] == 2013)]
-    removed_duplicates.to_csv(data_path + 'zhang_duplicates2.csv', index=False)
+    # removed_duplicates.to_csv(data_path + 'zhang_duplicates2.csv', index=False)
 
 duplicates_removed = len(removed_duplicates)
 print(f"Number of duplicates removed: {duplicates_removed}")
