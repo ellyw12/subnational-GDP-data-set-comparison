@@ -1,3 +1,12 @@
+"""
+Z2024_prep.py
+
+With this script GRP data (Admin 1) by Zhang et al. 2024 are converted to enable comparison with other data sets.
+
+Author: Brielle Wells 
+"""
+
+
 
 import pandas as pd
 import numpy as np
@@ -50,10 +59,6 @@ merge_zhang_with_dose['zmean'] = np.exp(merge_zhang_with_dose['zoutput'])
 data = merge_zhang_with_dose
 # data['GID_0'] = data['GID']
 print(data.columns)
-
-
-#Filter data to include only rows where both columns are not NaN
-# data = data.dropna(subset=['zmean'])
 
 # Print the number of rows in the data DataFrame
 num_rows = len(data)

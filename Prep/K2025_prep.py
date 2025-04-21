@@ -1,5 +1,5 @@
 """
-K2025_conversion.py
+K2025_prep.py
 
 With this script GRP data (Admin 1) by Kummu et al. 2025 are converted to 2015
 constant USD variables to enable comparison with other data sets.

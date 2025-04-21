@@ -1,3 +1,11 @@
+"""
+To expand spatial coverage, the ISIMIP population data aligns GRP and GRP per capita values across the data sets.
+Calculations consider the correlation pairs as described in the currency conversion section, and they produce
+the mean of the available correlation pairs for that sub-national region. 
+
+Author: BW 
+"""
+
 import pandas as pd
 import geopandas as gpd
 import matplotlib.pyplot as plt

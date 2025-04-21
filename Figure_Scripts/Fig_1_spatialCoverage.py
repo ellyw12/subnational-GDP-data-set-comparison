@@ -1,3 +1,14 @@
+"""
+Using the pre-processed and merged data from the prep files, this script determines the spatial coverage of 
+each dataset by plotting the regions where data is available.
+
+This includes manually entered regions from Kummu et al. 2025 that are narrower than admin level 1. 
+Note also that Zhang et al. contains GID_1 regions (MAR, PHL, NPL) that are not able to be converted to
+DOSE regions and are therefore not included in the final plot.
+
+Author: BW 
+"""
+
 import geopandas as gpd
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches

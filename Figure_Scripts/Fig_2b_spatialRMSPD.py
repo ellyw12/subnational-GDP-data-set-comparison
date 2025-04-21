@@ -1,3 +1,8 @@
+"""
+Same as Fig 2a but for the spatial RMSPD rather than Pearson R. 
+
+Author: BW 
+"""
 import pandas as pd
 import geopandas as gpd
 import matplotlib.pyplot as plt
