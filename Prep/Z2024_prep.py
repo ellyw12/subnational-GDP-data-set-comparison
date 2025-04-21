@@ -15,7 +15,7 @@ Zhang data downloaded from: https://doi.org/10.6084/m9.figshare.24024597.v3.
 data_path               =   './Data/'
 graphics_path           =   '../Graphics/'
 deflator_path           =    data_path +'deflator/'
-Zhang_path              =    data_path +'Zhang/'
+Zhang_path              =    data_path +'modelled_data'
 
 dose_v2                 =   'DOSE_V2.10.csv'
 Zhang_og                =   'Global_sub-national_GDP-pc_with_input_output.csv'
