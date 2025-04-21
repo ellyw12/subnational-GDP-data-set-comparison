@@ -139,7 +139,6 @@ print(unique_gid_1)
 
 num_rows2 = len(data)
 print(f"Number of rows in data after conversions: {num_rows2}")
-# Remove duplicate combinations of year and GID_1, keeping the first occurrence
 data = data.drop_duplicates(subset=['year', 'GID_1'], keep='first')
 print(f"Number of rows after removing duplicate year and GID_1 combinations: {len(data)}")
 

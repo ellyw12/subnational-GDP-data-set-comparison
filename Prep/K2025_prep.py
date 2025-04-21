@@ -12,23 +12,12 @@ import pandas as pd
 
 data_path               =   './Data/'
 deflator_path           =    data_path +'deflator/'
-kummu_path              =    data_path +'modelled_data'
+kummu_path              =    data_path +'modelled_data/'
 
 dose_v2                 =   'DOSE_V2.10.csv'
 kummu_2025_adm1_pc      = 'tabulated_adm1_gdp_perCapita.csv'
     # Data downloaded from https://zenodo.org/records/13943886
 dose                    =   pd.read_csv(data_path+dose_v2)
-
-
-# Define paths
-data_path               = r'C:\Users\31629\Documents\HU INRM\WiSe 2024-2025\PIK Study project\Coding\SP_dose\DOSE replication files\DOSE replication files\Data'
-deflator_path           = data_path+'deflator'
-
-
-# Define files
-dose_v2                 = 'DOSE_V2.10.csv'
-kummu_2025_adm1_pc      = 'tabulated_adm1_gdp_perCapita.csv'
-        # Data downloaded from https://zenodo.org/records/13943886
 
 # Load DOSE data
 data                    = pd.read_csv(data_path+dose_v2)
@@ -44,21 +33,6 @@ kummu_2025 = kummu_2025.melt(id_vars=['GID_nmbr', 'iso3', 'Country', 'Subnat'],
 
 # Create dictionary with unique regions in K2025 for countries present in DOSE
 baseline1 = kummu_2025.copy().set_index('Subnat')
-
-#A = baseline1.copy().reset_index()
-#A = A.loc[A.iso3.isin(list(data.GID_0.unique()))]
-
-#regions_kummu2025 = A.drop_duplicates(subset=['iso3', 'Subnat'])[['iso3', 'Subnat']]
-
-# Make dictionary of unique DOSE identifiers and region names
-#d = dict(zip(zip(data.drop_duplicates(['GID_0', 'GID_1']).GID_0, data.drop_duplicates(['GID_0', 'GID_1']).region),
-#             data.drop_duplicates(['GID_0', 'GID_1']).GID_1))
-
-# Add GID_1 to regions_kummu2025 where 'region' matches 'Subnat'
-#regions_kummu2025['GID_1'] = regions_kummu2025.apply(lambda x: d.get((x['iso3'], x['Subnat'])), axis=1)
-
-#regions_kummu2025.to_excel(kummu_path  + 'kummu_regions_identifiers.xlsx',
-#                           sheet_name='Data', index=False)
 
 # Match manually edited list with GID_1 data
 B = pd.read_excel(kummu_path+'kummu_regions_identifiers_manually_edited.xlsx')
@@ -212,12 +186,4 @@ pickle_path = data_path + 'pickle/'
 
 data[['GID_0', 'GID_1', 'year', 'K2025', 'K2025_pc', 'K2025_pc_ppp_2015',
       'K2025_pc_lcu2015_ppp', 'K2025_pc_usd_2015', 'K2025_pc_lcu2015_usd']
-      ].to_pickle(pickle_path+'K2025_data_outer.pkl')
-
-# # Select for Egypt and save separately
-# egypt_data = data[data['GID_0'] == 'EGY']
-
-# egypt_data[['GID_0', 'GID_1', 'year', 'K2025_pc', 'K2025_pc_ppp_2015',
-#             'K2025_pc_lcu2015_ppp', 'K2025_pc_usd_2015',
-#             'K2025_pc_lcu2015_usd']].to_pickle(
-#             pickle_path+'K2025_EGY_data.pkl')
+      ].to_pickle(pickle_path+'K2025_data.pkl')
