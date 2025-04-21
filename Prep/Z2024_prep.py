@@ -46,11 +46,11 @@ merge_zhang_with_dose = pd.merge(dose, zhang_clean[['year', 'GID_1','CPGDP', 'ML
                      on=['year', 'GID_1'], how='outer')
 merge_zhang_with_dose = merge_zhang_with_dose.rename(columns={'MLPPred_lGDP_mean': 'zoutput', 'MLPPred_lGDP_var': 'zvar'})
 merge_zhang_with_dose['zmean'] = np.exp(merge_zhang_with_dose['zoutput'])
-data = merge_zhang_with_dose
 
-zhang_clean['zmean'] = np.exp(zhang_clean['MLPPred_lGDP_mean'])
-data = zhang_clean
-data['GID_0'] = data['GID']
+data = merge_zhang_with_dose
+# data['GID_0'] = data['GID']
+print(data.columns)
+
 
 #Filter data to include only rows where both columns are not NaN
 # data = data.dropna(subset=['zmean'])
@@ -125,11 +125,26 @@ data = data.sort_values(by=['GID_0', 'GID_1'])
 data = data.reset_index(drop=True)
 # print(data[['GID_0', 'GID_1', 'year', 'Z2024_GRP_pc_current_usd', 'Z2024_GRP_pc_ppp_2015', 'Z2024_GRP_pc_usd_2015', 'Z2024_GRP_pc_lcu2015_usd', 'Z2024_GRP_pc_lcu2015_ppp']].head(20))
 
+# Iterate over columns and create total GRP versions by multiplying by population
+data['Z2024'] = data['Z2024_pc'] * data['pop']
+for col in data.columns:
+    if '_pc_' in col:  # Check if the column name contains '_pc_'
+        new_col = col.replace('_pc_', '_')  # Create the new column name
+        # Multiply by 'pop', allowing NaN to propagate
+        data[new_col] = data[col] * data['pop']
+
+unique_gid_1 = data['GID_1'].unique()
+print(f"Unique GID_1 values ({len(unique_gid_1)} total):")
+print(unique_gid_1)
+
 num_rows2 = len(data)
 print(f"Number of rows in data after conversions: {num_rows2}")
+# Remove duplicate combinations of year and GID_1, keeping the first occurrence
+data = data.drop_duplicates(subset=['year', 'GID_1'], keep='first')
+print(f"Number of rows after removing duplicate year and GID_1 combinations: {len(data)}")
 
 pickle_path = data_path + 'pickle/'
 
 # Save the DataFrame to a pickle file
-data[['GID_0', 'GID_1', 'year', 'Z2024_pc','Z2024_GRP_pc_lcu', 'Z2024_GRP_pc_lcu_2015','Z2024_GRP_pc_lcu2015_usd', 'Z2024_GRP_pc_ppp_2015', 'Z2024_GRP_pc_lcu2015_ppp']].to_pickle(pickle_path + 'Z2024_data.pkl')
+data[['GID_0', 'GID_1', 'year', 'Z2024_pc','Z2024_GRP_pc_lcu', 'Z2024_GRP_pc_lcu_2015','Z2024_GRP_pc_lcu2015_usd', 'Z2024_GRP_pc_ppp_2015', 'Z2024_GRP_pc_lcu2015_ppp','Z2024','Z2024_GRP_lcu', 'Z2024_GRP_lcu_2015','Z2024_GRP_lcu2015_usd', 'Z2024_GRP_ppp_2015', 'Z2024_GRP_lcu2015_ppp']].to_pickle(pickle_path + 'Z2024_data.pkl')
 

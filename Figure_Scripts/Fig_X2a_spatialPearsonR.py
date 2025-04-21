@@ -25,6 +25,10 @@ isimip_pop_data = pd.read_csv(isimip_pop_path)
 data = isimip_pop_data
 # data = dose_pop_data
 
+print(data.columns)
+print("Current index:", data.index)
+
+
 # Load spatial data (shapefile) for subnational regions
 gadm_path = data_path + 'spatial data/'
 map_data = 'gadm_custom_merged.shp'
