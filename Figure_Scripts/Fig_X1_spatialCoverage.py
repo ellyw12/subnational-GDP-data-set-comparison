@@ -7,6 +7,7 @@ import pandas as pd
 
 
 data_path = './Data/'
+graphics_path = './Figures/'
 
 data_dose_pop = 'merged_dose_pop.csv'
 dose_pop_path = data_path + data_dose_pop
@@ -189,6 +190,6 @@ global_legend_patches = [
 ]
 global_ax.legend(handles=global_legend_patches, loc='lower left', fontsize=10, frameon=True, handlelength=1.2, borderpad=0.5, labelspacing=0.4)
 
-graphics_folder = './Figures/'
-output_file = f"{graphics_folder}data_coverage_plot_3panels.png"
+
+output_file = f"{graphics_path}data_coverage_plot_3panels.png"
 plt.savefig(output_file, format='png', bbox_inches='tight', dpi=300)
