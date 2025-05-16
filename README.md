@@ -7,7 +7,7 @@ Authors: Josh Arky, Leon Liessem, Matthias Zarama Giedion, Luuk Staal, Brielle W
 To begin please complete the following preparation in this order: 
 
     1. Download the necessary collection of data files from the Zenodo folder. Link:  __________________. 
-    2. Download GADM 3.6 files for spatial map curration. A comprehensive instruction guide for this is available in the READme file of the DOSE Replication files. Link: https://zenodo.org/records7659600. 
+    2. Download GADM 3.6 files for spatial map curration. A comprehensive instruction guide for this is available in the READme file of the DOSE Replication files. Link: https://zenodo.org/records/7659600. 
 
 
     3. Run prep files: 
