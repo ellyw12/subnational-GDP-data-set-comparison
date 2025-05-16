@@ -4,10 +4,10 @@ import os
 
 # Paths:
 
-data_path               =   '../Data/'
-graphics_path           =   '../Graphics/'
+data_path               =   './Data/'
+graphics_path           =   './Figures/'
 deflator_path           =    data_path +'deflator/'
-chen_path               =    data_path +'chen2022/'
+chen_path               =    data_path +'modelled_data/'
 
 # File names:
 dose_v2p10               =   'DOSE_V2.10.csv'
@@ -114,11 +114,13 @@ filtered_dc = dc.loc[dc['GID_0'] == country, ['GID_0', 'GID_1', 'year', 'C2022',
                                             'C2022_grp_pc_lcu2015_ppp', 'C2022_grp_pc_usd_2015']]
 filtered_dc.to_pickle(f"{chen_path}C2022_{country}_data.pkl")
 
+pickle_path = data_path + 'pickle/'
+
 dc[['GID_0', 'GID_1', 'year', 'C2022',
     'C2022_grp_ppp_2015', 'C2022_grp_usd_2015',
     'C2022_grp_lcu2015_usd', 'C2022_grp_lcu_2015',
     'C2022_pc', 'C2022_grp_pc_ppp_2015',
-    'C2022_grp_pc_lcu2015_ppp', 'C2022_grp_pc_usd_2015']].to_pickle(chen_path+'C2022_data.pkl')
+    'C2022_grp_pc_lcu2015_ppp', 'C2022_grp_pc_usd_2015']].to_pickle(pickle_path+'C2022_data.pkl')
 
 # Note: to import other data this way:
 # imported_data = pd.read_pickle(chen_path+'chen_data.pkl')
