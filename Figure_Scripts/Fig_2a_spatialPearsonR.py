@@ -15,6 +15,7 @@ from sklearn.linear_model import LinearRegression
 # from sklearn.metrics import r2_score
 import numpy as np
 from matplotlib.colors import Normalize
+from matplotlib.colors import LinearSegmentedColormap, TwoSlopeNorm
 
 data_path = './Data/'
 
@@ -51,12 +52,12 @@ correlation_pairs = {
     ("DOSE", "Z2024"): ("grp_pc_usd", "Z2024_pc"),
     ("DOSE", "C2022"): ("grp_pc_ppp", "C2022_grp_pc_ppp"),
     ("DOSE", "WS2022"): ("grp_pc_ppp", "WS2022_grp_pc_ppp"),
-    ("K2025", "Z2024"): ("K2025_grp_pc_lcu_2017", "Z2024_grp_pc_lcu_2017"),
-    ("K2025", "C2022"): ("K2025_pc", "C2022_pc"),
-    ("K2025", "WS2022"): ("K2025_grp_pc_ppp", "WS2022_grp_pc_ppp"),
-    ("Z2024", "C2022"): ("Z2024_grp_pc_ppp", "C2022_grp_pc_ppp"),
-    ("Z2024", "WS2022"): ("Z2024_grp_pc_ppp", "WS2022_grp_pc_ppp"),
-    ("C2022", "WS2022"): ("C2022_grp_pc_ppp", "WS2022_grp_pc_ppp")
+    # ("K2025", "Z2024"): ("K2025_grp_pc_lcu_2017", "Z2024_grp_pc_lcu_2017"),
+    # ("K2025", "C2022"): ("K2025_pc", "C2022_pc"),
+    # ("K2025", "WS2022"): ("K2025_grp_pc_ppp", "WS2022_grp_pc_ppp"),
+    # ("Z2024", "C2022"): ("Z2024_grp_pc_ppp", "C2022_grp_pc_ppp"),
+    # ("Z2024", "WS2022"): ("Z2024_grp_pc_ppp", "WS2022_grp_pc_ppp"),
+    # ("C2022", "WS2022"): ("C2022_grp_pc_ppp", "WS2022_grp_pc_ppp")
 }
 
 # Calculate Pearson R for each correlation pair within each subnational region
@@ -88,10 +89,17 @@ maps = maps.merge(pearson_df, on='GID_1', how='left')
 maps = maps.set_index('GID_1')
 
 # Define a diverging colormap (blue for positive, red for negative)
-cmap = plt.cm.bwr_r
+# cmap = plt.cm.bwr_r
+
+# Define a custom colormap with more intermediate colors
+colors = ["darkred", "red", "pink", "white", "lightblue", "blue", "darkblue"]
+custom_cmap = LinearSegmentedColormap.from_list("custom_cmap", colors)
+cmap = custom_cmap
+norm = TwoSlopeNorm(vmin=-1, vcenter=0, vmax=1)
+
 
 # Create a normalization object for Pearson R (-1 to 1)
-norm = Normalize(vmin=-1, vmax=1)
+# norm = Normalize(vmin=-1, vmax=1)
 
 # Plotting
 fig, ax = plt.subplots(1, 1, figsize=(15, 10))
@@ -106,7 +114,8 @@ for idx, row in maps.iterrows():
     gpd.GeoSeries([row.geometry]).plot(ax=ax, color=color, edgecolor='black', linewidth=0.1)
 
 # Set title and display
-ax.set_title("Average Pearson R Across Datasets")
+# ax.set_title("Average Pearson R Across Datasets")
+ax.text(0.01, 0.98, 'A', transform=ax.transAxes, fontsize=16, fontweight='bold', va='top', ha='left')
 ax.axis('off')
 
 # Create a color bar with the diverging colormap
@@ -121,7 +130,10 @@ ax.legend(handles=[no_data_patch], loc='lower left', fontsize=10, frameon=True)
 
 # Save the plot as a .png file
 graphics_path = './Figures/'
-output_file = f"{graphics_path}/spatial_pearson_r.png"
+if ("C2022", "WS2022") in correlation_pairs:
+    output_file = f"{graphics_path}/spatial_pearson_r.png" #all correlation pairs 
+else:
+    output_file = f"{graphics_path}/DOSE_only_spatial_pearson_r.png" #DOSE only correlation pairs
 plt.savefig(output_file, format='png', bbox_inches='tight')
 
 plt.show()

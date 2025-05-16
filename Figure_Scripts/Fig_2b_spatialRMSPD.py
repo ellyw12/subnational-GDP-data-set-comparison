@@ -26,8 +26,8 @@ isimip_pop_data = pd.read_csv(isimip_pop_path)
 
 '''Toggle between the datasets by commenting in/out the desired one'''
 
-data = isimip_pop_data
-# data = dose_pop_data
+# data = isimip_pop_data
+data = dose_pop_data
 
 # Load spatial data (shapefile) for subnational regions
 gadm_path = data_path + 'spatial data/'
@@ -37,18 +37,19 @@ maps = gpd.read_file(gadm_path + map_data)
 # Set index to 'GID_1' for easy merging
 maps = maps.set_index('GID_1')
 
-# Define correlation pairs
+# Define correlation pairs - 
+#modify to only the DOSE pairs by commenting out correlation pairs that do not include DOSE
 correlation_pairs = {
     ("DOSE", "K2025"): ("grp_pc_lcu_2017", "K2025_grp_pc_lcu_2017"),
     ("DOSE", "Z2024"): ("grp_pc_usd", "Z2024_pc"),
     ("DOSE", "C2022"): ("grp_pc_ppp", "C2022_grp_pc_ppp"),
     ("DOSE", "WS2022"): ("grp_pc_ppp", "WS2022_grp_pc_ppp"),
-    ("K2025", "Z2024"): ("K2025_grp_pc_lcu_2017", "Z2024_grp_pc_lcu_2017"),
-    ("K2025", "C2022"): ("K2025_pc", "C2022_pc"),
-    ("K2025", "WS2022"): ("K2025_grp_pc_ppp", "WS2022_grp_pc_ppp"),
-    ("Z2024", "C2022"): ("Z2024_grp_pc_ppp", "C2022_grp_pc_ppp"),
-    ("Z2024", "WS2022"): ("Z2024_grp_pc_ppp", "WS2022_grp_pc_ppp"),
-    ("C2022", "WS2022"): ("C2022_grp_pc_ppp", "WS2022_grp_pc_ppp")
+    # ("K2025", "Z2024"): ("K2025_grp_pc_lcu_2017", "Z2024_grp_pc_lcu_2017"),
+    # ("K2025", "C2022"): ("K2025_pc", "C2022_pc"),
+    # ("K2025", "WS2022"): ("K2025_grp_pc_ppp", "WS2022_grp_pc_ppp"),
+    # ("Z2024", "C2022"): ("Z2024_grp_pc_ppp", "C2022_grp_pc_ppp"),
+    # ("Z2024", "WS2022"): ("Z2024_grp_pc_ppp", "WS2022_grp_pc_ppp"),
+    # ("C2022", "WS2022"): ("C2022_grp_pc_ppp", "WS2022_grp_pc_ppp")
 }
 
 
@@ -122,6 +123,7 @@ for idx, row in maps.iterrows():
 #Plot details 
 ax.axis('off')
 ax.set_title("Average RMSPD Across Datasets")
+ax.text(0.01, 0.98, 'B', transform=ax.transAxes, fontsize=16, fontweight='bold', va='top', ha='left')
 norm = Normalize(vmin=rmspd_min, vmax=rmspd_max)
 sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
 sm.set_array([])
@@ -133,6 +135,10 @@ ax.legend(handles=[no_data_patch], loc='lower left', fontsize=10, frameon=True)
 
 # Save the plot as a .png file
 graphics_path = './Figures/'
-output_file = f"{graphics_path}/spatial_rmspd.png"
+if ("C2022", "WS2022") in correlation_pairs:
+    output_file = f"{graphics_path}/spatial_rmspd.png" #all correlation pairs 
+else:
+    output_file = f"{graphics_path}/DOSE_only_rmspd.png" #DOSE only correlation pairs
 plt.savefig(output_file, format='png', bbox_inches='tight')
+
 plt.show()
