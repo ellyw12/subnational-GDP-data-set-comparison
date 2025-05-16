@@ -5,13 +5,19 @@ import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 import string
 
+data_path               =   './Data/'
+
+deflator_path           =    data_path +'deflator/'
+wangsun_path              =    data_path +'modelled_data/'
+
+
 # File names:
 dose_v2 = 'DOSE_V2.10.csv'
 wangsun = 'GRP_WangSun_aggregated(new).csv'
 
 # Load data
-dose = pd.read_csv(dose_v2)
-wang = pd.read_csv(wangsun)
+dose = pd.read_csv(data_path+dose_v2)
+wang = pd.read_csv(wangsun_path+wangsun)
 
 data = dose
 
@@ -31,7 +37,7 @@ data=dose_with_wangsun
 
 
 # Load World Bank GDP deflator data
-deflators = pd.read_excel(
+deflators = pd.read_excel(deflator_path+
                           '2022_03_30_WorldBank_gdp_deflator.xlsx',
                           sheet_name='Data', index_col=None, usecols='B,E:BM',
                           skiprows=3).set_index('Country Code')
@@ -83,7 +89,7 @@ data.update(deflators_us_2005)
 
 
 # Add ppp conversion factors for 2015
-ppp_data = pd.read_excel('ppp_data_all_countries.xlsx')
+ppp_data = pd.read_excel(deflator_path+'ppp_data_all_countries.xlsx')
 ppp_data = ppp_data.loc[ppp_data.year==2015]
 d = dict(zip(ppp_data.iso_3, ppp_data.PPP))
 
@@ -93,7 +99,7 @@ data.loc[data.GID_0=='USA','ppp_2015'] = len(data.loc[data.GID_0=='USA']) * [1]
 
 
 # Load MER conversion factors for 2015 and add them for each country to 'data'
-fx_data = pd.read_excel('fx_data_all_countries.xlsx')
+fx_data = pd.read_excel(deflator_path+'fx_data_all_countries.xlsx')
 fx_data = fx_data.loc[fx_data.year==2015]
 d = dict(zip(fx_data.iso_3, fx_data.fx))
 data['fx_2015'] = data['GID_0'].apply(lambda x: d.get(x))
@@ -137,18 +143,14 @@ data['WS2022_pc_lcu2015_ppp'] = data['WS2022_lcu2015_ppp'] / data['pop']
 data['WS2022_pc_usd_2015'] = data['WS2022_usd_2015'] / data['pop']
 data['WS2022_pc_lcu2015_usd'] = data['WS2022_lcu2015_usd'] / data['pop']
 
-
-
-
-
-
 data = data.reset_index()
 
+pickle_path = data_path + 'pickle/'
 
 data.rename(columns={'year': 'year'}, inplace=True)
 data[['GID_0', 'GID_1', 'year', 'WS2022', 'WS2022_ppp_2015',
             'WS2022_lcu2015_ppp', 'WS2022_usd_2015',
             'WS2022_lcu2015_usd', 'WS2022_pc', 'WS2022_pc_ppp_2015',
             'WS2022_pc_lcu2015_ppp', 'WS2022_pc_usd_2015',
-            'WS2022_pc_lcu2015_usd']].to_pickle(
-            'WangSun22_pickle_total_&_pc_values_data_DOSE-INDEPENDENT.pkl')
+            'WS2022_pc_lcu2015_usd']].to_pickle(pickle_path+
+            'WS2022_data.pkl')
