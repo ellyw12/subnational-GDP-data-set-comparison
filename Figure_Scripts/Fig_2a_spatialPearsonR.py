@@ -31,8 +31,8 @@ isimip_pop_data = pd.read_csv(isimip_pop_path)
 
 '''Toggle between the datasets by commenting in/out the desired one'''
 
-data = isimip_pop_data
-# data = dose_pop_data
+# data = isimip_pop_data
+data = dose_pop_data
 
 print(data.columns)
 print("Current index:", data.index)
@@ -92,10 +92,10 @@ maps = maps.set_index('GID_1')
 # cmap = plt.cm.bwr_r
 
 # Define a custom colormap with more intermediate colors
-colors = ["darkred", "red", "pink", "white", "lightblue", "blue", "darkblue"]
+colors = ["red", "pink", "white", "lightblue", "darkblue"]  # Only include color names
 custom_cmap = LinearSegmentedColormap.from_list("custom_cmap", colors)
 cmap = custom_cmap
-norm = TwoSlopeNorm(vmin=-1, vcenter=0, vmax=1)
+norm = TwoSlopeNorm(vmin=-1, vcenter=0.5, vmax=1)
 
 
 # Create a normalization object for Pearson R (-1 to 1)
@@ -137,3 +137,9 @@ else:
 plt.savefig(output_file, format='png', bbox_inches='tight')
 
 plt.show()
+
+# print gid_1 with the lowest average Pearson R to better specify 
+# lowest_correlating_regions = pearson_df.sort_values(by='avg_pearson', ascending=True).head(120)
+# print("30 Lowest Correlating GID_1 Regions:")
+# print(lowest_correlating_regions[['GID_1', 'avg_pearson']])
+# lowest_correlating_regions[['GID_1', 'avg_pearson']].to_csv('./Data/lowest_correlating_regions.csv', index=False)
