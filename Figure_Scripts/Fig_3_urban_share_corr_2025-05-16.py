@@ -1,4 +1,6 @@
 ''' Update 2025-04-18: using C2022 and WS2022 0.001 degree aggregations '''
+'''Modified paths to repo paths and edited line 230 to fix a dictionary reading error (BW 2025-05-19)'''
+###Note - this version does not include the error bars.###
 
 import os
 import pickle
@@ -10,19 +12,20 @@ from sklearn.linear_model import LinearRegression
 """ 1. Load and merge data from different sets """
 
 # Define paths
-data_path               =   '../Data/'
-graphics_path           =   '../Graphics/'
+data_path               =   './Data/'
+graphics_path           =   './Figures/'
 deflator_path           =    data_path +'deflator/'
-pickle_path             =    data_path +'pickles/'
+pickle_path             =    data_path +'pickle/'
+WS_path                =    data_path +'modelled_data/'
 
 # Define files
 dose_v2   = 'DOSE_V2.10.csv'
-pkl_files = ['C2022_data_outer.pkl', 'K2025_data_outer.pkl',
-             'Z2024_data_outer.pkl']
-WS2022 = 'WS2022_total_grp_0p001.csv'
+pkl_files = ['C2022_data.pkl', 'K2025_data.pkl',
+             'Z2024_data.pkl']
+WS2022 = 'GRP_WangSun_aggregated(new).csv'
 
 data = pd.read_csv(data_path+dose_v2)
-WS_data = pd.read_csv(data_path+WS2022)
+WS_data = pd.read_csv(WS_path+WS2022)
 
 # Load each .pkl file and merge it with the data dataframe
 for pkl_file in pkl_files:
@@ -207,7 +210,8 @@ colors = ['blue', 'orange', 'green', 'red']  # Adjust these to match your plot's
 # Plot all comparisons on the same plot
 plt.figure(figsize=(12, 6))
 for i, (target_variable, correlations) in enumerate(results.items()):
-    plt.scatter(range(len(bands)), correlations, label=custom_legend_names[target_variable], color=colors[i])
+    correlation_values = [c['correlation'] for c in correlations] #add this line and modified below scatter command due to dictionary reading error (BW 19.5.2025)
+    plt.scatter(range(len(bands)), correlation_values, label=custom_legend_names[target_variable], color=colors[i])
     # Add horizontal dotted line for the overall correlation
     plt.axhline(y=overall_correlations[target_variable], color=colors[i], linestyle='--', linewidth=1.5, alpha=0.5)
 
@@ -225,7 +229,7 @@ plt.title('GRP per capita correlations by urban area share:\nDOSE vs. global mod
 plt.xticks(range(len(bands)), decile_labels, rotation=45)
 plt.legend(bbox_to_anchor=(1.05, 0.5), loc='center left')
 plt.tight_layout()
-plt.savefig(graphics_path+'urban_share_corr_2025-04-21.png') ## update with today's date
+plt.savefig(graphics_path+'urban_share_corr_2025-05-19.png') ## update with today's date
 plt.show()
 
 # Function to calculate metrics for each decile group
