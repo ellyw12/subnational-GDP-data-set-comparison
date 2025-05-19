@@ -77,6 +77,13 @@ axes = [
     fig.add_subplot(gs[1, 0]),  # Kummu
     fig.add_subplot(gs[1, 1])   # Global datasets
 ]
+plt.subplots_adjust(hspace=0.000001)  # Reduce vertical space between rows
+
+# Add labels 'a', 'b', 'c' to the panels
+axes[0].text(-0.05, 1.05, 'A', transform=axes[0].transAxes, fontsize=16, fontweight='bold', va='top', ha='right')
+axes[1].text(-0.05, 1.05, 'B', transform=axes[1].transAxes, fontsize=16, fontweight='bold', va='top', ha='right')
+axes[2].text(-0.05, 1.05, 'C', transform=axes[2].transAxes, fontsize=16, fontweight='bold', va='top', ha='right')
+
 panel_titles = [
     "DOSE v2 - Spatial Coverage of Reported Data",
     "Kummu et al., 2025 - K2025",
@@ -137,18 +144,19 @@ for i, (col, ax, color, title) in enumerate(zip(data_columns[:2], axes[:2], pane
             ax=ax
         )
     
-    ax.set_title(title, fontsize=16)
+    # ax.set_title(title, fontsize=16)
     ax.axis('off')
 
     
     legend_patches = [
         mpatches.Patch(color=color_total, label=f"{col} (Data Available)"),
+        mpatches.Patch(color='lightgrey', label="No Data"), 
     ]
     if col == 'K2025_pc':  # Add a legend entry for narrower regions in the Kummu plot
         legend_patches.append(
-            mpatches.Patch(color=lighter_orange, label="Narrower than admin level 1")
+            mpatches.Patch(color=lighter_orange, label="Narrower than GID_1")
         )
-    ax.legend(handles=legend_patches, loc='lower left', fontsize=10, frameon=True, handlelength=1.2, borderpad=0.5, labelspacing=0.4)
+    ax.legend(handles=legend_patches, loc='lower left', fontsize=12, frameon=True, handlelength=1.2, borderpad=0.5, labelspacing=0.4)
 
 
 # Create the third plot for global datasets
@@ -190,17 +198,16 @@ maps.plot(
     legend=False
 )
 
-global_ax.set_title(panel_titles[2], fontsize=12)
+# global_ax.set_title(panel_titles[2], fontsize=12)
 global_ax.axis('off')
 
 global_legend_patches = [
-    mpatches.Patch(color='purple', label='All 3 datasets'),
+    mpatches.Patch(color='purple', label='Z2024, C2022, and WS2022'),
     mpatches.Patch(color='green', label='WS2022 and C2022'),
     # mpatches.Patch(color='pink', label='Only Z2024, C2022, or WS2022'),
     mpatches.Patch(color='lightgrey', label='No data')
 ]
-global_ax.legend(handles=global_legend_patches, loc='lower left', fontsize=10, frameon=True, handlelength=1.2, borderpad=0.5, labelspacing=0.4)
-
+global_ax.legend(handles=global_legend_patches, loc='lower left', fontsize=12, frameon=True, handlelength=1.2, borderpad=0.5, labelspacing=0.4)
 
 output_file = f"{graphics_path}data_coverage_plot_3panels.png"
 plt.savefig(output_file, format='png', bbox_inches='tight', dpi=300)
