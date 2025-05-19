@@ -144,37 +144,118 @@ urban_data = data.merge(urban[['GID_1', 'year', 'urban_share']], on=['GID_1', 'y
 
 from scipy.stats import pearsonr
 
-def analyze_urban_share(urban_data, target_variable, dose_variable):
-    # Filter out rows with missing values
-    urban_filtered = urban_data[urban_data[target_variable].notnull() & urban_data[dose_variable].notnull() & urban_data['urban_share'].notnull()]
-
-    # Step 1: Create urban share bands w/ equal number of data points (q = number of bands)
-    urban_filtered = urban_filtered.copy()  # Create a copy (avoids warning)
-    urban_filtered['urbanshare_band'] = pd.qcut(urban_filtered['urban_share'], q=10, duplicates='drop')
-
-    # Step 2: Calculate Pearson Correlation Coefficient for each band and count data points
-    urb_correlations = []
-    bands = []
-
-    for band in urban_filtered['urbanshare_band'].cat.categories:
-        band_data = urban_filtered[urban_filtered['urbanshare_band'] == band]
-        if len(band_data) > 1:  # Ensure there are enough data points to calculate correlation
-            x = band_data[dose_variable]
-            y = band_data[target_variable]
-            correlation, p_value = pearsonr(x, y)  # Calculate correlation and p-value
-        else:
-            correlation = np.nan  # Not enough data points to calculate correlation
-        urb_correlations.append({'correlation': correlation, 'p_value': p_value})
-        bands.append(band)
-
-    return bands, urb_correlations
+# update 2025-05-19: bootstrap the correlation values
 
 # List of target variables to analyze
 target_variables = ['K2025_grp_pc_lcu_2017', 'Z2024_pc', 'WS2022_grp_pc_ppp', 'C2022_grp_pc_ppp']
 dose_variables = ['grp_pc_lcu_2017', 'grp_pc_usd', 'grp_pc_ppp', 'grp_pc_ppp']
 
-# Dictionary to store correlation values for each target variable
+# Step 0: Compute shared subset for decile calculation
+dose_variables_set = set(dose_variables)
+required_columns = list(dose_variables_set.union({'urban_share'}))
+
+# Subset of rows with non-null values in *all* dose_variables + urban_share
+urban_decile_base = urban_data.dropna(subset=required_columns)
+
+# Create urban share deciles once from the shared base
+urban_decile_base = urban_decile_base.copy()
+urban_decile_base['urbanshare_band'] = pd.qcut(
+    urban_decile_base['urban_share'], q=10, duplicates='drop'
+)
+
+# Store urbanshare_band per index
+urbanshare_band_map = urban_decile_base['urbanshare_band']
+
+def bootstrap_pearsonr(x, y, n_bootstrap=1000, ci=95, random_state=None):
+    """Perform bootstrap on Pearson correlation."""
+    rng = np.random.default_rng(seed=random_state)
+    boot_corrs = []
+    
+    data = np.array([x, y]).T
+    valid_data = data[~np.isnan(data).any(axis=1)]
+    
+    if len(valid_data) < 2:
+        return np.nan, (np.nan, np.nan)
+
+    for _ in range(n_bootstrap):
+        sample = rng.choice(valid_data, size=len(valid_data), replace=True)
+        r, _ = pearsonr(sample[:, 0], sample[:, 1])
+        boot_corrs.append(r)
+    
+    boot_corrs = np.array(boot_corrs)
+    lower = np.percentile(boot_corrs, (100 - ci) / 2)
+    upper = np.percentile(boot_corrs, 100 - (100 - ci) / 2)
+    mean_corr = np.mean(boot_corrs)
+    
+    return mean_corr, (lower, upper)
+
+def analyze_urban_share_bootstrap(
+    urban_data,
+    target_variable,
+    dose_variable,
+    urbanshare_band_map,
+    n_bootstrap=1000,
+    ci=95,
+    random_state=None
+):
+    # Filter rows with non-null values for both variables
+    urban_decile_base = urban_data[
+        urban_data[target_variable].notnull() &
+        urban_data[dose_variable].notnull()
+    ].copy()
+
+    # Merge precomputed urban share bands
+    urban_decile_base['urbanshare_band'] = urbanshare_band_map
+
+    # Drop rows with missing bands
+    urban_decile_base = urban_decile_base.dropna(subset=['urbanshare_band'])
+
+    bands = []
+    bootstrapped_results = []
+
+    for band in urban_decile_base['urbanshare_band'].cat.categories:
+        band_data = urban_decile_base[urban_decile_base['urbanshare_band'] == band]
+        x = band_data[dose_variable].values
+        y = band_data[target_variable].values
+
+        if len(band_data) > 1:
+            mean_corr, (lower_ci, upper_ci) = bootstrap_pearsonr(
+                x, y, n_bootstrap=n_bootstrap, ci=ci, random_state=random_state
+            )
+        else:
+            mean_corr, lower_ci, upper_ci = np.nan, np.nan, np.nan
+
+        bands.append(band)
+        bootstrapped_results.append({
+            'mean_correlation': mean_corr,
+            'ci_lower': lower_ci,
+            'ci_upper': upper_ci,
+            'n': len(band_data)
+        })
+
+    return bands, bootstrapped_results
+
 results = {}
+
+for target_variable, dose_variable in zip(target_variables, dose_variables):
+    print(f"\nBootstrapping {target_variable} vs {dose_variable}...\n")
+    bands, boot_results = analyze_urban_share_bootstrap(
+        urban_data,
+        target_variable,
+        dose_variable,
+        urbanshare_band_map,
+        n_bootstrap=1000,
+        ci=95,
+        random_state=42
+    )
+    results[target_variable] = boot_results
+
+    for band, res in zip(bands, boot_results):
+        print(f"Urban share band {band}: "
+              f"Mean r = {res['mean_correlation']:.2f}, "
+              f"95% CI = ({res['ci_lower']:.2f}, {res['ci_upper']:.2f}), "
+              f"n = {res['n']}")
+
 
 # Define custom names for the legend
 custom_legend_names = {
@@ -183,53 +264,58 @@ custom_legend_names = {
     'K2025_grp_pc_lcu_2017': 'K2025',
     'WS2022_grp_pc_ppp': 'WS2022'
 }
+# plot the bootstrapped correlations
 
-# Run the analysis for each target variable
-for target_variable, dose_variable in zip(target_variables, dose_variables):
-    print(f"\nAnalyzing {target_variable} against {dose_variable}...\n")
-    bands, correlations = analyze_urban_share(urban_data, target_variable, dose_variable)
-    results[target_variable] = correlations
+# Define colors for each target variable
+colors = ['blue', 'orange', 'green', 'red']  # Match your previous variable colors
 
-    # Print correlation values for each band
-    for band, correlation in zip(bands, correlations):
-        print(f"Urban share band {band}: Pearson Correlation = {correlation['correlation']:.2f}, P-Value = {correlation['p_value']:.4f}")
-
-# Calculate overall correlations for each target and dose variable pair
-overall_correlations = {}
-for target_variable, dose_variable in zip(target_variables, dose_variables):
-    # Filter out rows with missing values
-    valid_data = urban_data[urban_data[target_variable].notnull() & urban_data[dose_variable].notnull()]
-    x = valid_data[dose_variable]
-    y = valid_data[target_variable]
-    overall_correlation = np.corrcoef(x, y)[0, 1]  # Pearson Correlation Coefficient
-    overall_correlations[target_variable] = overall_correlation
-
-# Define colors for each target variable (same as used in the scatter plot)
-colors = ['blue', 'orange', 'green', 'red']  # Adjust these to match your plot's colors
-
-# Plot all comparisons on the same plot
 plt.figure(figsize=(12, 6))
-for i, (target_variable, correlations) in enumerate(results.items()):
-    correlation_values = [c['correlation'] for c in correlations] #add this line and modified below scatter command due to dictionary reading error (BW 19.5.2025)
-    plt.scatter(range(len(bands)), correlation_values, label=custom_legend_names[target_variable], color=colors[i])
-    # Add horizontal dotted line for the overall correlation
-    plt.axhline(y=overall_correlations[target_variable], color=colors[i], linestyle='--', linewidth=1.5, alpha=0.5)
+
+for i, (target_variable, boot_results) in enumerate(results.items()):
+    # Extract data for plotting
+    mean_corrs = [res['mean_correlation'] for res in boot_results]
+    lower_ci = [res['ci_lower'] for res in boot_results]
+    upper_ci = [res['ci_upper'] for res in boot_results]
+
+    # Plot mean correlation with error bars (95% CI)
+    plt.errorbar(
+        range(len(bands)),
+        mean_corrs,
+        yerr=[np.array(mean_corrs) - np.array(lower_ci), np.array(upper_ci) - np.array(mean_corrs)],
+        fmt='o',
+        capsize=4,
+        label=custom_legend_names[target_variable],
+        color=colors[i],
+        alpha=0.8
+    )
+
+    # Optional: Add horizontal dashed line for overall correlation
+    plt.axhline(
+        y=overall_correlations[target_variable],
+        color=colors[i],
+        linestyle='--',
+        linewidth=1.5,
+        alpha=0.5
+    )
 
 # Create decile labels
-decile_labels = [f'Lowest 10%' if i == 0 else f'{i+1}nd decile' if i == 1 else f'{i+1}rd decile' if i == 2 else f'Highest 10%' if i == 9 else f'{i+1}th decile' for i in range(len(bands))]
+decile_labels = [
+    'Lowest 10%' if i == 0 else
+    'Highest 10%' if i == 9 else
+    f'{i+1}th decile'
+    for i in range(len(bands))
+]
 
-# # Plot all comparisons on the same plot
-# plt.figure(figsize=(12, 6))
-# for target_variable, correlations in results.items():
-#     plt.scatter(range(len(bands)), correlations, label=custom_legend_names[target_variable])
-
-plt.xlabel('Urban area share decile')
-plt.ylabel('Pearson Correlation Coefficient')
-plt.title('GRP per capita correlations by urban area share:\nDOSE vs. global modelled data sets')
-plt.xticks(range(len(bands)), decile_labels, rotation=45)
-plt.legend(bbox_to_anchor=(1.05, 0.5), loc='center left')
+plt.xlabel('Urban Area Share Deciles', fontsize=14)
+plt.ylabel('Bootstrapped Pearson Correlation', fontsize=14)
+plt.xticks(range(len(bands)), decile_labels, rotation=45, fontsize=12)
+plt.yticks(fontsize=12)
+plt.legend(bbox_to_anchor=(1.05, 0.5), loc='center left', fontsize=12)
 plt.tight_layout()
-plt.savefig(graphics_path+'urban_share_corr_2025-05-19.png') ## update with today's date
+
+# Save and show the plot
+plot_path = os.path.join(graphics_path, 'urban_corr_bootstrapped_2025-05-19.png')  # update with today's date
+plt.savefig(plot_path, dpi=300)
 plt.show()
 
 # Function to calculate metrics for each decile group
