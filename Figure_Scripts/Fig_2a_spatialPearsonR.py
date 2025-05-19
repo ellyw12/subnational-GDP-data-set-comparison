@@ -47,11 +47,28 @@ maps = gpd.read_file(gadm_path + map_data)
 maps = maps.set_index('GID_1')
 
 # Define correlation pairs
-correlation_pairs = {
-    ("DOSE", "K2025"): ("grp_pc_lcu_2017", "K2025_grp_pc_lcu_2017"),
-    ("DOSE", "Z2024"): ("grp_pc_usd", "Z2024_pc"),
-    ("DOSE", "C2022"): ("grp_pc_ppp", "C2022_grp_pc_ppp"),
-    ("DOSE", "WS2022"): ("grp_pc_ppp", "WS2022_grp_pc_ppp"),
+'''Select GRP per capita or total GRP by commenting in/out the desired one. Note: Rename file if you want to save both.'''
+
+##GRP per capita##
+# correlation_pairs = {
+#     ("DOSE", "K2025"): ("grp_pc_lcu_2017", "K2025_grp_pc_lcu_2017"),
+#     ("DOSE", "Z2024"): ("grp_pc_usd", "Z2024_pc"),
+#     ("DOSE", "C2022"): ("grp_pc_ppp", "C2022_grp_pc_ppp"),
+#     ("DOSE", "WS2022"): ("grp_pc_ppp", "WS2022_grp_pc_ppp"),
+#     # ("K2025", "Z2024"): ("K2025_grp_pc_lcu_2017", "Z2024_grp_pc_lcu_2017"),
+#     # ("K2025", "C2022"): ("K2025_pc", "C2022_pc"),
+#     # ("K2025", "WS2022"): ("K2025_grp_pc_ppp", "WS2022_grp_pc_ppp"),
+#     # ("Z2024", "C2022"): ("Z2024_grp_pc_ppp", "C2022_grp_pc_ppp"),
+#     # ("Z2024", "WS2022"): ("Z2024_grp_pc_ppp", "WS2022_grp_pc_ppp"),
+#     # ("C2022", "WS2022"): ("C2022_grp_pc_ppp", "WS2022_grp_pc_ppp")
+# }
+
+ ##GRP total##
+correlation_pairs = { 
+    ("DOSE", "K2025"): ("grp_lcu_2017", "K2025_grp_lcu_2017"),
+    ("DOSE", "Z2024"): ("grp_usd", "Z2024"),
+    ("DOSE", "C2022"): ("grp_ppp", "C2022_grp_ppp"),
+    ("DOSE", "WS2022"): ("grp_ppp", "WS2022_grp_ppp"),
     # ("K2025", "Z2024"): ("K2025_grp_pc_lcu_2017", "Z2024_grp_pc_lcu_2017"),
     # ("K2025", "C2022"): ("K2025_pc", "C2022_pc"),
     # ("K2025", "WS2022"): ("K2025_grp_pc_ppp", "WS2022_grp_pc_ppp"),
