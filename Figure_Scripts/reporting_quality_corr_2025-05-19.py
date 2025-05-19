@@ -234,85 +234,96 @@ spi_colors = {
 #spi_countries = spi_2016_quintiles
 spi_countries = spi_2016_full_quintiles
 
-def analyze_spi_groups_with_pvalues(data, target_variable, dose_variable, spi_countries):
-    # Dictionary to store correlation results, p-values, and counts for each SPI group
-    spi_results = {}
+# List of target and dose variables to analyze
+target_variables = ['K2025_grp_pc_lcu_2017', 'Z2024_pc', 'WS2022_grp_pc_ppp', 'C2022_grp_pc_ppp']
+dose_variables = ['grp_pc_lcu_2017', 'grp_pc_usd', 'grp_pc_ppp', 'grp_pc_ppp']
 
-    # Iterate over each SPI group
-    for group_name, country_list in spi_countries.items():
-        # Filter data for the current SPI group
-        group_data = data[data['GID_0'].isin(country_list)]
+### Bootstrapping version + plot with 95% CI ###
 
-        # Count the number of observations
-        observation_count = len(group_data)
+def bootstrap_correlation_ci(x, y, n_bootstrap=1000, ci=95, random_seed=None):
+    assert len(x) == len(y)
+    rng = np.random.default_rng(seed=random_seed)
+    n = len(x)
+    boot_corrs = []
 
-        # Ensure there are enough data points for correlation analysis
-        if observation_count > 1:
-            x = group_data[dose_variable]
-            y = group_data[target_variable]
+    for _ in range(n_bootstrap):
+        indices = rng.choice(n, size=n, replace=True)
+        x_sample = x.iloc[indices]
+        y_sample = y.iloc[indices]
+        if x_sample.std() > 0 and y_sample.std() > 0:  # Avoid NaN correlations
+            r, _ = pearsonr(x_sample, y_sample)
+            boot_corrs.append(r)
 
-            # Filter out rows with missing values
-            valid_data = group_data[x.notnull() & y.notnull()]
-            if len(valid_data) > 1:
-                # Calculate correlation and p-value
-                correlation, p_value = pearsonr(valid_data[dose_variable], valid_data[target_variable])
-            else:
-                correlation, p_value = np.nan, np.nan
-        else:
-            correlation, p_value = np.nan, np.nan
+    if len(boot_corrs) == 0:
+        return np.nan, (np.nan, np.nan)
 
-        # Store the correlation result, p-value, and observation count
-        spi_results[group_name] = {'correlation': correlation, 'p_value': p_value, 'count': observation_count}
+    boot_corrs = np.array(boot_corrs)
+    lower = np.percentile(boot_corrs, (100 - ci) / 2)
+    upper = np.percentile(boot_corrs, 100 - (100 - ci) / 2)
+    return np.mean(boot_corrs), (lower, upper)
 
-    return spi_results
-
-# Run the analysis for each target variable
-results_with_pvalues = {}
+bootstrapped_results = {}
 
 for target_variable, dose_variable in zip(target_variables, dose_variables):
-    print(f"\nAnalyzing {target_variable} against {dose_variable}...\n")
-    correlations_with_pvalues = analyze_spi_groups_with_pvalues(data, target_variable, dose_variable, spi_countries)
-    results_with_pvalues[target_variable] = correlations_with_pvalues
+    print(f"\nBootstrapping {target_variable} vs {dose_variable}...\n")
+    results = {}
 
-    # Print correlation values, p-values, and counts for each SPI group
-    for group_name, result in correlations_with_pvalues.items():
-        print(f"SPI group {group_name}: Pearson Correlation = {result['correlation']:.2f}, "
-              f"P-Value = {result['p_value']:.4f}, Observations = {result['count']}")
+    for group_name, countries in spi_countries.items():
+        group_data = data[data['GID_0'].isin(countries)]
+        x = group_data[dose_variable]
+        y = group_data[target_variable]
+        valid = group_data[x.notnull() & y.notnull()]
+        
+        if len(valid) > 2:
+            mean_corr, (ci_low, ci_high) = bootstrap_correlation_ci(
+                valid[dose_variable], valid[target_variable], n_bootstrap=1000
+            )
+        else:
+            mean_corr, ci_low, ci_high = np.nan, np.nan, np.nan
 
-# Plot the results
+        results[group_name] = {
+            'mean_corr': mean_corr,
+            'ci_low': ci_low,
+            'ci_high': ci_high
+        }
+
+    bootstrapped_results[target_variable] = results
+
+import matplotlib.pyplot as plt
+
 plt.figure(figsize=(12, 6))
-colors = ['blue', 'orange', 'green', 'red']  # Colors for each target variable
+colors = ['blue', 'orange', 'green', 'red']
 group_names = list(spi_countries.keys())
 
-# Define custom names for the legend
-custom_legend_names = {
-    'C2022_grp_pc_ppp': 'C2022',
-    'Z2024_pc': 'Z2024',
-    'K2025_grp_pc_lcu_2017': 'K2025',
-    'WS2022_grp_pc_ppp': 'WS2022'
-}
-
-# Calculate the number of observations for each group
-group_counts = {group: sum(data['GID_0'].isin(countries)) for group, countries in spi_countries.items()}
-
-# Create x-tick labels with observation counts
 xtick_labels = [
-    f"{label}\n(n = {group_counts[group]})"
+    f"{label}\n(n = {sum(data['GID_0'].isin(spi_countries[group]))})"
     for label, group in zip(['Lowest 20%', '2nd quintile', '3rd quintile', '4th quintile', 'Highest 20%'], group_names)
 ]
 
-for i, (target_variable, correlations) in enumerate(results.items()):
-    # Extract correlation values in the order of SPI groups
-    correlation_values = [correlations[group] for group in group_names]
-    plt.scatter(group_names, correlation_values, label=custom_legend_names[target_variable], color=colors[i], s=100)
+x_positions = np.arange(len(group_names))
 
-# Add labels and title
-plt.xlabel('Reporting quality quintiles (World Bank SPI Groups)')
-plt.ylabel('Pearson Correlation Coefficient')
-plt.title('GRP per capita correlations by reporting quality group')
-plt.xticks(ticks=range(len(group_names)), labels=xtick_labels, rotation=0)
-plt.legend(bbox_to_anchor=(1.05, 0.5), loc='center left')
+for i, (target_variable, group_results) in enumerate(bootstrapped_results.items()):
+    means = [group_results[group]['mean_corr'] for group in group_names]
+    lowers = [group_results[group]['mean_corr'] - group_results[group]['ci_low'] for group in group_names]
+    uppers = [group_results[group]['ci_high'] - group_results[group]['mean_corr'] for group in group_names]
+    errors = [lowers, uppers]
+
+    plt.errorbar(
+        x=x_positions,
+        y=means,
+        yerr=errors,
+        fmt='o',
+        capsize=5,
+        label=custom_legend_names[target_variable],
+        color=colors[i],
+        markersize=8
+    )
+
+plt.xticks(ticks=x_positions, labels=xtick_labels, rotation=0, fontsize=12)
+plt.yticks(fontsize=12)
+plt.xlabel('Statistical Performance Indicators (SPI 5.2) Quintiles', fontsize=14)
+plt.ylabel('Bootstrapped Pearson Correlation', fontsize=14)
+plt.legend(bbox_to_anchor=(1.05, 0.5), loc='center left', fontsize=12)
 plt.tight_layout()
-plt.savefig(graphics_path + 'spi_group_corr_2025-04-21.png')  # Update with today's date
+plt.savefig(graphics_path + 'spi_group_corr_bootstrapped_2025-05-19.png')
 plt.show()
-
