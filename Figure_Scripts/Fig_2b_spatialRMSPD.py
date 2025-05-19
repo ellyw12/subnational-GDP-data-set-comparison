@@ -122,7 +122,7 @@ for idx, row in maps.iterrows():
 
 #Plot details 
 ax.axis('off')
-ax.set_title("Average RMSPD Across Datasets")
+# ax.set_title("Average RMSPD Across Datasets")
 ax.text(0.01, 0.98, 'B', transform=ax.transAxes, fontsize=16, fontweight='bold', va='top', ha='left')
 norm = Normalize(vmin=rmspd_min, vmax=rmspd_max)
 sm = plt.cm.ScalarMappable(cmap=cmap, norm=norm)
