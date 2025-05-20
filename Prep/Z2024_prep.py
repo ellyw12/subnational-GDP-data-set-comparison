@@ -152,3 +152,15 @@ pickle_path = data_path + 'pickle/'
 # Save the DataFrame to a pickle file
 data[['GID_0', 'GID_1', 'year', 'Z2024_pc','Z2024_GRP_pc_lcu', 'Z2024_GRP_pc_lcu_2015','Z2024_GRP_pc_lcu2015_usd', 'Z2024_GRP_pc_ppp_2015', 'Z2024_GRP_pc_lcu2015_ppp','Z2024','Z2024_GRP_lcu', 'Z2024_GRP_lcu_2015','Z2024_GRP_lcu2015_usd', 'Z2024_GRP_ppp_2015', 'Z2024_GRP_lcu2015_ppp']].to_pickle(pickle_path + 'Z2024_data.pkl')
 
+
+# Filter the data for GID_0 = 'EGY'
+egy_data = data[data['GID_0'] == 'EGY']
+
+# Save the filtered data to a separate pickle file in the 'EGY' folder
+egy_pickle_path = pickle_path + 'EGY/'
+
+egy_data[['GID_0', 'GID_1', 'year', 'Z2024_pc', 'Z2024_GRP_pc_lcu', 'Z2024_GRP_pc_lcu_2015',
+          'Z2024_GRP_pc_lcu2015_usd', 'Z2024_GRP_pc_ppp_2015', 'Z2024_GRP_pc_lcu2015_ppp',
+          'Z2024', 'Z2024_GRP_lcu', 'Z2024_GRP_lcu_2015', 'Z2024_GRP_lcu2015_usd',
+          'Z2024_GRP_ppp_2015', 'Z2024_GRP_lcu2015_ppp']
+         ].to_pickle(egy_pickle_path + 'Z2024_data_EGY.pkl')

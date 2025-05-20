@@ -107,12 +107,14 @@ dc = dc.reset_index()
 
 # if you want to select particular country, otherwise comment out
 country = 'EGY'
+pickle_path = data_path + 'pickle/'
+egy_pickle_path = pickle_path + 'EGY/'
 filtered_dc = dc.loc[dc['GID_0'] == country, ['GID_0', 'GID_1', 'year', 'C2022',
                                             'C2022_grp_ppp_2015', 'C2022_grp_usd_2015',
                                             'C2022_grp_lcu2015_usd', 'C2022_grp_lcu_2015',
                                             'C2022_pc', 'C2022_grp_pc_ppp_2015',
                                             'C2022_grp_pc_lcu2015_ppp', 'C2022_grp_pc_usd_2015']]
-filtered_dc.to_pickle(f"{chen_path}C2022_{country}_data.pkl")
+filtered_dc.to_pickle(f"{egy_pickle_path}C2022_{country}_data.pkl")
 
 pickle_path = data_path + 'pickle/'
 

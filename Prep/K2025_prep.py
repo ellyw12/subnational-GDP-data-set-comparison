@@ -187,3 +187,13 @@ pickle_path = data_path + 'pickle/'
 data[['GID_0', 'GID_1', 'year', 'K2025', 'K2025_pc', 'K2025_pc_ppp_2015',
       'K2025_pc_lcu2015_ppp', 'K2025_pc_usd_2015', 'K2025_pc_lcu2015_usd']
       ].to_pickle(pickle_path+'K2025_data.pkl')
+
+
+# Filter the data for GID_0 = 'EGY'
+egy_data = data[data['GID_0'] == 'EGY']
+
+# Save the filtered data to a separate pickle file
+pickle_path = data_path + 'pickle/'
+egy_data[['GID_0', 'GID_1', 'year', 'K2025', 'K2025_pc', 'K2025_pc_ppp_2015',
+          'K2025_pc_lcu2015_ppp', 'K2025_pc_usd_2015', 'K2025_pc_lcu2015_usd']
+         ].to_pickle(pickle_path + 'EGY/K2025_data_EGY.pkl')

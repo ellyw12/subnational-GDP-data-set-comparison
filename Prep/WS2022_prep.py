@@ -154,3 +154,15 @@ data[['GID_0', 'GID_1', 'year', 'WS2022', 'WS2022_ppp_2015',
             'WS2022_pc_lcu2015_ppp', 'WS2022_pc_usd_2015',
             'WS2022_pc_lcu2015_usd']].to_pickle(pickle_path+
             'WS2022_data.pkl')
+
+
+# Filter the data for GID_0 = 'EGY'
+egy_data = data[data['GID_0'] == 'EGY']
+
+egy_pickle_path = pickle_path + 'EGY/'
+
+egy_data[['GID_0', 'GID_1', 'year', 'WS2022', 'WS2022_ppp_2015',
+          'WS2022_lcu2015_ppp', 'WS2022_usd_2015',
+          'WS2022_lcu2015_usd', 'WS2022_pc', 'WS2022_pc_ppp_2015',
+          'WS2022_pc_lcu2015_ppp', 'WS2022_pc_usd_2015',
+          'WS2022_pc_lcu2015_usd']].to_pickle(egy_pickle_path + 'WS2022_data_EGY.pkl')
