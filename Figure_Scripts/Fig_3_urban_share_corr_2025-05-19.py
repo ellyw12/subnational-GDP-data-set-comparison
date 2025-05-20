@@ -256,6 +256,16 @@ for target_variable, dose_variable in zip(target_variables, dose_variables):
               f"95% CI = ({res['ci_lower']:.2f}, {res['ci_upper']:.2f}), "
               f"n = {res['n']}")
 
+###5-20 - BW added 258-268 because error: 'overall correlatons undefined' - look this definition from a previous version ###
+# Calculate overall correlations for each target and dose variable pair
+overall_correlations = {}
+for target_variable, dose_variable in zip(target_variables, dose_variables):
+    # Filter out rows with missing values
+    valid_data = urban_data[urban_data[target_variable].notnull() & urban_data[dose_variable].notnull()]
+    x = valid_data[dose_variable]
+    y = valid_data[target_variable]
+    overall_correlation = np.corrcoef(x, y)[0, 1]  # Pearson Correlation Coefficient
+    overall_correlations[target_variable] = overall_correlation
 
 # Define custom names for the legend
 custom_legend_names = {
