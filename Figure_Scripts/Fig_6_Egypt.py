@@ -11,7 +11,7 @@ data_path               =   './Data/'
 graphics_path           =   './Figures/'
 deflator_path           =    data_path +'deflator/'
 suleiman_path           =    data_path +'suleiman/'
-gadm_path               = data_path + 'spatial data/'
+gadm_path               =    data_path + 'spatial data/'
 
 
 # File names:
@@ -91,8 +91,7 @@ data = dose.copy()
 
 import pickle
 
-
-folder_path = r'C:\Users\Leon Ließem\OneDrive\Desktop\Master INRM\DOSE replication files\DOSE replication files\Data\Egypt intercomp'
+folder_path = data_path + 'pickle/EGY/'
 pkl_files = ['C2022_EGY_data.pkl', 'K2025_EGY_data.pkl', 'Z2024_EGY_data.pkl', 'WS2022_EGY_data.pkl']
 
 
