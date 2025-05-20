@@ -9,6 +9,13 @@ To begin please complete the following preparation in this order:
     1. Download the necessary collection of data files from the Zenodo folder. Link:  __________________. 
     2. Download GADM 3.6 files for spatial map curration. A comprehensive instruction guide for this is available in the READme file of the DOSE Replication files. Link: https://zenodo.org/records/7659600. 
 
+    3. Aggregate global gridded products. This requires extra computing power. Reccomended to utilize a SLURM cluster or equivalent. 
+        - C2022_aggregate.py  
+        - WS2022_aggregate.py 
+        
+        Execute the above files with the .sh job file (
+        details of computing capacity utilitzed are in this file, #of nodes, etc.)
+        - run_aggregation.sh
 
     3. Run prep files: 
         - Z2024_prep.py
