@@ -149,13 +149,18 @@ for i, (col, ax, color, title) in enumerate(zip(data_columns[:2], axes[:2], pane
 
     
     legend_patches = [
-        mpatches.Patch(color=color_total, label=f"{col} (Data Available)"),
-        mpatches.Patch(color='lightgrey', label="No Data"), 
+        # mpatches.Patch(color=color_total, label=f"{col} (Data Available)"),
     ]
+    if col == 'grp_lcu':  # Add a legend entry for narrower regions in the Kummu plot
+        legend_patches.append(
+            mpatches.Patch(label="DOSE lcu data available", color=color_total)
+        )
     if col == 'K2025_pc':  # Add a legend entry for narrower regions in the Kummu plot
         legend_patches.append(
-            mpatches.Patch(color=lighter_orange, label="Narrower than GID_1")
+            mpatches.Patch(color=color_total, label=f"K2025)"),
+            mpatches.Patch(color=lighter_orange, label="K2025 Narrower than GID_1")
         )
+        mpatches.Patch(color='lightgrey', label="No Data"), 
     ax.legend(handles=legend_patches, loc='lower left', fontsize=12, frameon=True, handlelength=1.2, borderpad=0.5, labelspacing=0.4)
 
 
