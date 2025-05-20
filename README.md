@@ -6,7 +6,7 @@ Authors: Josh Arky, Leon Liessem, Matthias Zarama Giedion, Luuk Staal, Brielle W
 
 To begin please complete the following preparation in this order: 
 
-    1. Download the necessary collection of data files from the Zenodo folder. Link:  __________________. 
+    1. Download the necessary collection of data files from the Zenodo folder. Link:  __________________.  ###Note to team - cannot edit after publishing, so this is not yet published. I have a zip file of the data that would go with this. Currently missing the EGY data##### 
     
     Original File origins: 
     

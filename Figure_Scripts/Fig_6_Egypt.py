@@ -7,11 +7,11 @@ from   scipy.stats import pearsonr
 import numpy as np
 
 
-data_path               =   r'C:\Users\Leon Ließem\OneDrive\Desktop\Master INRM\DOSE replication files\DOSE replication files\Data'
-graphics_path           =   r'C:\Users\Leon Ließem\OneDrive\Desktop\Master INRM\DOSE replication files\DOSE replication files\Graphics'
-deflator_path           =    data_path +'\\deflator/'
-suleiman_path           =    data_path +'\\suleiman/'  # Add the path to the new dataset folder
-gadm_path               =    data_path + '\\spatial data/'
+data_path               =   './Data/'
+graphics_path           =   './Figures/'
+deflator_path           =    data_path +'deflator/'
+suleiman_path           =    data_path +'suleiman/'
+gadm_path               = data_path + 'spatial data/'
 
 
 # File names:
@@ -23,10 +23,10 @@ map_data                =   'gadm_custom_merged.shp'
 
 
 # Load the datasets
-dose                    =   pd.read_csv(data_path+'\\'+dose_v2)
-suleiman                =   pd.read_excel(suleiman_path + '\\' + suleiman_data, engine='openpyxl').rename(columns={'GDP_current_EGP':'S2024'})  
-egypt_population_data   =   pd.read_excel(data_path + '\\' + egypt_population , sheet_name='Panel Data')
-maps                    =   gpd.read_file(gadm_path+'\\'+map_data)
+dose                    =   pd.read_csv(data_path+dose_v2)
+suleiman                =   pd.read_excel(suleiman_path + suleiman_data, engine='openpyxl').rename(columns={'GDP_current_EGP':'S2024'})  
+egypt_population_data   =   pd.read_excel(data_path +  egypt_population , sheet_name='Panel Data')
+maps                    =   gpd.read_file(gadm_path + map_data)
 
 
 data=dose
