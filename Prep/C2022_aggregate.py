@@ -1,6 +1,10 @@
 '''
 This script aggregates the gridded data sets to the sub-national level (GADM 3.6 GID_1).
 It is designed to be run on a SLURM cluster with multiple cores.
+
+Originally retrieved from:
+https://figshare.com/articles/dataset/Global_1_km_1_km_gridded_revised_real_gross_domestic_product_and_electricity_consumption_during_1992-2019_based_on_calibrated_nighttime_light_data/17004523/1
+
 '''
 
 import os

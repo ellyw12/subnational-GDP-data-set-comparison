@@ -7,7 +7,10 @@ Authors: Josh Arky, Leon Liessem, Matthias Zarama Giedion, Luuk Staal, Brielle W
 To begin please complete the following preparation in this order: 
 
     1. Download the necessary collection of data files from the Zenodo folder. Link:  __________________. 
-    Original Files origins: 
+    
+    Original File origins: 
+    
+    **Note: we futher aggregate C2022 and WS2022 in the next step of the preperation process. Only their aggregated form is available in the above Zenodo folder.
 
         C2022: https://figshare.com/articles/dataset/Global_1_km_1_km_gridded_revised_real_gross_domestic_product_and_electricity_consumption_during_1992-2019_based_on_calibrated_nighttime_light_data/17004523/1
 

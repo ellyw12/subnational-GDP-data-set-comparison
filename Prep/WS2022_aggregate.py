@@ -1,3 +1,11 @@
+'''
+This script aggregates the gridded data sets to the sub-national level (GADM 3.6 GID_1).
+It is designed to be run on a SLURM cluster with multiple cores.
+
+Originally retrieved from: https://zenodo.org/records/5880037
+
+'''
+
 import os
 import geopandas as gpd
 import rasterio
