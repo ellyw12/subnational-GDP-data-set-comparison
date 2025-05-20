@@ -1,5 +1,7 @@
 '''
-Calculates Regional Pearson correlation (R) between the DOSE dataset and the five alternative subnational GDP datasets for Egypt S2024, K2025, Z2024, C202 and WS2022. Each map displays the spatial distribution of correlation coefficients between time-series values for each region (GID_1 level), based on shared years of available data.
+Calculates Regional Pearson correlation (R) between the DOSE dataset and the five alternative subnational GDP datasets 
+for Egypt S2024, K2025, Z2024, C202 and WS2022. Each map displays the spatial distribution of correlation
+ coefficients between time-series values for each region (GID_1 level), based on shared years of available data.
 
 Author: LL 
 '''
