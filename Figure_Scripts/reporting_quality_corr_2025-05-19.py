@@ -1,3 +1,5 @@
+##update BW - 05.20 add custom legend and update filepaths 
+
 import os
 import pickle
 import matplotlib.pyplot as plt
@@ -9,19 +11,20 @@ from sklearn.linear_model import LinearRegression
 """ 1. Load and merge data from different sets """
 
 # Define paths
-data_path               =   '../Data/'
-graphics_path           =   '../Graphics/'
+data_path               =   './Data/'
+graphics_path           =   './Figures/'
 deflator_path           =    data_path +'deflator/'
-pickle_path             =    data_path +'pickles/'
+pickle_path             =    data_path +'pickle/'
+WS_path                =    data_path +'modelled_data/'
 
 # Define files
 dose_v2   = 'DOSE_V2.10.csv'
-pkl_files = ['C2022_data_outer.pkl', 'K2025_data_outer.pkl',
-             'Z2024_data_outer.pkl']
-WS2022 = 'WS2022_total_grp_0p001.csv'
+pkl_files = ['C2022_data.pkl', 'K2025_data.pkl',
+             'Z2024_data.pkl']
+WS2022 = 'GRP_WangSun_aggregated(new).csv'
 
 data = pd.read_csv(data_path+dose_v2)
-WS_data = pd.read_csv(data_path+WS2022)
+WS_data = pd.read_csv(WS_path+WS2022)
 
 # Load each .pkl file and merge it with the data dataframe
 for pkl_file in pkl_files:
@@ -230,6 +233,14 @@ spi_colors = {
     'TopQuint': '#2ec4b6'
 }
 
+####Added this from Fig_3 due to error 'custom_legend_names' not defined
+# Define custom names for the legend
+custom_legend_names = {
+    'C2022_grp_pc_ppp': 'C2022',
+    'Z2024_pc': 'Z2024',
+    'K2025_grp_pc_lcu_2017': 'K2025',
+    'WS2022_grp_pc_ppp': 'WS2022'
+}
 # Select quintile groups
 #spi_countries = spi_2016_quintiles
 spi_countries = spi_2016_full_quintiles
