@@ -1,6 +1,15 @@
+'''This script has two main parts. 
+
+1. calculates PCC and 95% confidence intervals between DOSE and the modelled datasets for GRP per capita across 10 deciles of urban area share.
+2. calculates summary of over- and under-estimation of GRP per capita by urban share decile (for global modelled datasets compared to DOSE). 
+ 
+Author JA
+ 
+ '''
+
 ''' Update 2025-04-18: using C2022 and WS2022 0.001 degree aggregations '''
 '''Modified paths to repo paths and edited line 230 to fix a dictionary reading error (BW 2025-05-19)'''
-###Note - this version does not include the error bars.###
+
 
 import os
 import pickle

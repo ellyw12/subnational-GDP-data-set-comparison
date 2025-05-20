@@ -1,3 +1,10 @@
+'''
+Calculate PCC and 95% confidence intervals for each modelled dataset and DOSE, grouped into Statistical Performance Indicators (SPI) quintiles.
+
+Author: JA 
+'''
+
+
 ##update BW - 05.20 add custom legend and update filepaths 
 
 import os
