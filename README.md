@@ -1,12 +1,11 @@
 
-'''
-This repository is built to aid in recreation of the figures from the paper 'Comparing subnational GDP data sets based on reporting and on night-time light'. 
+This repository is built to recreate figures from the paper 'Proxying productivity: a comparative assessment of global subnational GDP datasets using night-time lights'. 
 
 Authors: Josh Arky, Leon Liessem, Matthias Zarama Giedion, Luuk Staal, Brielle Wells
 
 To begin please complete the following preparation in this order: 
 
-    1. Download the necessary collection of data files from the Zenodo folder. Link:  __________________.  ###Note to team - cannot edit after publishing, so this is not yet published. I have a zip file of the data that would go with this. Currently missing the EGY data##### 
+    1. Download the necessary collection of data files from the Zenodo folder. Link:  __________________.  ###Note to team: Zenodo is harder to edit after publishing, so this is not yet published. Once published, place the link here. For now, there is a zip file of the collected data. The zip currently is missing the EGY data##### 
     
     Original File origins: 
     
