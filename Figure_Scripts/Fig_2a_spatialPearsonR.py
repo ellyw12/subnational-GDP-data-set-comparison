@@ -109,10 +109,10 @@ maps = maps.set_index('GID_1')
 # cmap = plt.cm.bwr_r
 
 # Define a custom colormap with more intermediate colors
-colors = ["red", "pink", "white", "lightblue", "darkblue"]  # Only include color names
+colors = ["darkred", "red", "pink", "white", "lightblue", "blue", "darkblue"]  # Only include color names
 custom_cmap = LinearSegmentedColormap.from_list("custom_cmap", colors)
 cmap = custom_cmap
-norm = TwoSlopeNorm(vmin=-1, vcenter=0.5, vmax=1)
+norm = TwoSlopeNorm(vmin=-1, vcenter=0, vmax=1)
 
 
 # Create a normalization object for Pearson R (-1 to 1)
